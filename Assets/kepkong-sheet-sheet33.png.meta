@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 34d8512d4f29a30439a29319cd606916
+guid: 592ca6de645bba64dab2dd8524b0ba67
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -3942176609733168476
-    second: ftssd_0
+      213: -2551086487976909856
+    second: kepkong-sheet-sheet33_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -100,7 +100,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ftssd_0
+      name: kepkong-sheet-sheet33_0
       rect:
         serializedVersion: 2
         x: 0
@@ -115,8 +115,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 4a2300f82439a49c0800000000000000
-      internalID: -3942176609733168476
+      spriteID: 0e366dcfa58b89cd0800000000000000
+      internalID: -2551086487976909856
       vertices: []
       indices: 
       edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ftssd_0: -3942176609733168476
+      kepkong-sheet-sheet33_0: -2551086487976909856
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

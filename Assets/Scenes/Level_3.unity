@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75345dfaab277084cab515e79239e1e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: Level_5
+  sceneToLoad: Level_6
   fadeImage: {fileID: 112127589}
   fadeSpeed: 2
 --- !u!61 &297654497
