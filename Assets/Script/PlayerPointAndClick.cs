@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems; // สำหรับเช็ก UI
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PointClickMaster : MonoBehaviour
@@ -17,34 +18,40 @@ public class PointClickMaster : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         targetPos = transform.position;
-        
-        // บังคับตั้งค่าฟิสิกส์กันพลาด
+
         rb.gravityScale = 0;
         rb.freezeRotation = true;
     }
 
     void Update()
     {
-        // 1. รับค่าการคลิกเมาส์ซ้าย
+        // 1. รับค่าการคลิกเมาส์ซ้าย + เพิ่มเงื่อนไขเช็ก UI
+        // !EventSystem.current.IsPointerOverGameObject() หมายถึง "ถ้าไม่ได้คลิกบน UI"
         if (Input.GetMouseButtonDown(0))
         {
+            // ตรวจสอบว่ามี EventSystem ใน Scene และเราไม่ได้กดทับ UI อยู่
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
+            {
+                // ถ้าคลิกโดน UI (เช่น ปุ่มวงกลมในมินิเกม) ให้จบฟังก์ชัน Update ตรงนี้เลย ไม่ต้องเดิน
+                return;
+            }
+
             Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             targetPos = new Vector2(mousePos.x, mousePos.y);
-            
+
             if (Vector2.Distance(transform.position, targetPos) > stopDistance)
             {
                 isMoving = true;
             }
         }
 
-        // 2. คุยกับ Animator (ส่งค่าให้ Blend Tree เล่นท่าซ้าย-ขวา)
+        // 2. คุยกับ Animator
         if (anim != null)
         {
             anim.SetBool("isWalking", isMoving);
 
             if (isMoving)
             {
-                // ถ้าเดินไปทางขวา ค่าจะเป็นบวก / ทางซ้าย ค่าจะเป็นลบ
                 float directionX = targetPos.x - transform.position.x;
                 anim.SetFloat("FaceX", directionX);
             }
@@ -53,7 +60,7 @@ public class PointClickMaster : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 3. ระบบฟิสิกส์การเดินแบบ "ไหลลื่น (Velocity)"
+        // 3. ระบบฟิสิกส์การเดิน
         if (isMoving)
         {
             float distance = Vector2.Distance(rb.position, targetPos);
@@ -61,7 +68,7 @@ public class PointClickMaster : MonoBehaviour
             if (distance > stopDistance)
             {
                 Vector2 direction = (targetPos - rb.position).normalized;
-                rb.linearVelocity = direction * speed; // ออกแรงผลัก ทำให้เบียดกำแพงได้เนียนๆ
+                rb.linearVelocity = direction * speed;
             }
             else
             {
@@ -70,25 +77,22 @@ public class PointClickMaster : MonoBehaviour
         }
         else
         {
-            rb.linearVelocity = Vector2.zero; // หยุดนิ่งสนิทเมื่อไม่เดิน
+            rb.linearVelocity = Vector2.zero;
         }
     }
 
-    // 4. ฟังก์ชันสั่งเบรก
     private void StopMovement()
     {
         isMoving = false;
         rb.linearVelocity = Vector2.zero;
     }
 
-    // 5. ระบบกันกระเด็น (ชนปุ๊บ หยุดปั๊บ)
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // ถ้าสิ่งที่ชนไม่ใช่จุดวาร์ปหรือไอเทมที่เดินผ่านได้ ให้หยุดเดินทันที
         if (!collision.collider.isTrigger)
         {
             StopMovement();
-            targetPos = transform.position; // ล้างเป้าหมายทิ้ง เพื่อไม่ให้มันพยายามดันกำแพงต่อ
+            targetPos = transform.position;
         }
     }
 }
