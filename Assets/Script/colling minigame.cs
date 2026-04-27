@@ -136,6 +136,8 @@ public class CoolingMiniGame : MonoBehaviour
         {
             // SUCCESS: เรียกใช้ HeatSystem แบบ Static
             HeatSystem.currentHeat -= goodCooling;
+
+            // ป้องกันไม่ให้ค่าติดลบ (ให้น้อยสุดคือ 0)
             HeatSystem.currentHeat = Mathf.Max(HeatSystem.currentHeat, 0);
 
             Debug.Log("<color=blue>ลดความร้อน!</color>");

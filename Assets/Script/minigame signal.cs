@@ -28,23 +28,25 @@ public class SignalMiniGame : MonoBehaviour
 
     void Update()
     {
-        // ถ้าภารกิจเสร็จแล้ว ไม่ต้องลดสัญญาณอีก
         if (isCompleted) return;
 
-        // --- ระบบสัญญาณลดลงอัตโนมัติ (ทำงานตลอดเวลาแม้ปิดหน้าจอ) ---
-        if (currentSignal > 0)
-        {
-            currentSignal -= dropSpeed * Time.deltaTime;
-        }
+        // --- เพิ่ม/แก้ไข: รอบสูงขึ้น สัญญาณไหลลงเร็วขึ้น ---
+        int round = SignalQuestManager.instance.currentRound;
+        float currentDrop=1f;
+        if (round == 1) currentDrop = 1f;  // รอบ 1 ลดวิละ 1
+        else if (round == 2) currentDrop = 0.5f; // รอบ 2 ลดวิละ 2 (ยากขึ้น)
+        else if (round == 3) currentDrop = 0.35f; // รอบ 3 ลดวิละ 4 (ยากสุด)
+
+        currentSignal -= currentDrop * Time.deltaTime;
+        // ------------------------------------------------
+
         currentSignal = Mathf.Clamp(currentSignal, 0, 100);
 
-        // อัปเดตแถบ Slider เฉพาะตอนที่เปิดหน้าจออยู่
         if (uiPanel.activeSelf && signalBar != null)
         {
             signalBar.value = currentSignal;
         }
 
-        // เช็กเงื่อนไขการชนะ
         if (currentSignal >= 100)
         {
             Win();
@@ -56,7 +58,14 @@ public class SignalMiniGame : MonoBehaviour
     {
         if (!isGameActive) return;
 
-        currentSignal += addSpeed;
+        // --- ส่วนที่เพิ่ม/แก้ไข: ปรับความแรงการกดตามรอบ ---
+        int round = SignalQuestManager.instance.currentRound;
+        float currentAddPower=1f;
+        if (round == 1) currentAddPower = 3f;   // รอบ 1 กดทีละ 3
+        else if (round == 2) currentAddPower = 1.8f; // รอบ 2 กดทีละ 1.8 (ยากขึ้น)
+        else if (round == 3) currentAddPower = 1.2f; // รอบ 3 กดทีละ 1.2 (ยากสุด)
+
+        currentSignal += currentAddPower;
 
         if (buttonTransform != null)
         {
@@ -70,13 +79,17 @@ public class SignalMiniGame : MonoBehaviour
     public void StartMiniGame()
     {
         if (isCompleted) return;
-
         isGameActive = true;
         uiPanel.SetActive(true);
-        MoveButtonRandomly();
 
-        // --- เรียกใช้ HeatSystem แบบ Static (เร่งความร้อนเป็น 3.0) ---
-        HeatSystem.SetHeatRate(3.0f);
+        // ปรับความเร็วตอนส่งสัญญาณตามรอบ
+        int round = SignalQuestManager.instance.currentRound;
+        float miniGameRate = 3.0f; // รอบ 1
+
+        if (round == 2) miniGameRate = 4.0f;
+        else if (round == 3) miniGameRate = 5.0f;
+
+        HeatSystem.SetHeatRate(miniGameRate);
     }
 
     // ฟังก์ชันสำหรับปุ่ม X (Exit)
@@ -85,7 +98,7 @@ public class SignalMiniGame : MonoBehaviour
         isGameActive = false;
         uiPanel.SetActive(false);
 
-        // --- เรียกใช้ HeatSystem แบบ Static (รีเซ็ตความร้อนกลับค่าปกติ) ---
+        // ใช้ฟังก์ชันใหม่ที่เราสร้างไว้เพื่อกลับไปใช้ค่าฐานของรอบนั้น
         HeatSystem.ResetHeatRate();
     }
 
@@ -99,6 +112,7 @@ public class SignalMiniGame : MonoBehaviour
         HeatSystem.ResetHeatRate();
 
         Debug.Log("ส่งสัญญาณสำเร็จถาวร!");
+        SignalQuestManager.instance.OnSignalSuccess();
     }
 
     void MoveButtonRandomly()
