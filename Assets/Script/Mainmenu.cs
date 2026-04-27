@@ -44,7 +44,7 @@ public class MainMenu : MonoBehaviour
         FirstTimeAudioScene5.hasPlayedInScene5 = false;
 
         // --- 6. โหลดฉากเริ่มเกม (ตรวจสอบชื่อให้ตรงกับ Build Settings) ---
-        SceneManager.LoadScene("Level_1");
+        SceneManager.LoadScene("Intro");
     }
     public void QuitGame()
     {
