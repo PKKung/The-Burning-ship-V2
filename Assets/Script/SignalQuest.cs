@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using TMPro; // Required for TextMeshProUGUI control
+using System.Collections; // เพิ่มตัวนี้เพื่อให้ใช้ Coroutine ได้
+using TMPro;
 
 public class SignalQuestManager : MonoBehaviour
 {
@@ -13,15 +14,16 @@ public class SignalQuestManager : MonoBehaviour
     public GameObject sparePartPrefab;
 
     [Header("UI Settings")]
-    public TextMeshProUGUI alertText; // Reference to the UI Text
-    public float displayTime = 2.5f;   // How long the message stays visible
+    public TextMeshProUGUI alertText;
+    public float displayTime = 2.5f;
 
     [Header("Scenes Config")]
-    // List of scene names (Must match exactly with Build Settings)
     public List<string> allSceneNames = new List<string> { "Map1", "Map2", "Map3" };
-
-    // List of scenes randomly chosen to spawn parts for the current round
     private List<string> targetScenes = new List<string>();
+
+    [Header("Broken Sequence Settings")]
+    public AudioSource brokenAudio;
+    public MonoBehaviour playerMovement;
 
     void Awake()
     {
@@ -35,7 +37,6 @@ public class SignalQuestManager : MonoBehaviour
 
     void Start()
     {
-        // First random spawn initialization when the game starts at Round 1
         if (currentRound == 1 && targetScenes.Count == 0)
         {
             PrepareGlobalSpawns();
@@ -49,32 +50,27 @@ public class SignalQuestManager : MonoBehaviour
     {
         string currentSceneName = scene.name;
 
-        // --- Automatic AlertText Search System ---
-        // Looks for a TextMeshPro object named "AlertText" in the current scene
         GameObject foundText = GameObject.Find("AlertText");
         if (foundText != null)
         {
             alertText = foundText.GetComponent<TextMeshProUGUI>();
-            alertText.gameObject.SetActive(false); // Hide by default
+            alertText.gameObject.SetActive(false);
         }
 
-        // Check if the loaded scene is one of the target spawn scenes
         for (int i = targetScenes.Count - 1; i >= 0; i--)
         {
             if (targetScenes[i] == currentSceneName)
             {
                 SpawnAtRandomPointInScene();
-                // Remove from targets once spawned so it doesn't duplicate if re-entering
                 targetScenes.RemoveAt(i);
             }
         }
     }
 
-    // --- Global Randomization: Selects scenes for parts to appear ---
     public void PrepareGlobalSpawns()
     {
         targetScenes.Clear();
-        int amountToSpawn = currentRound; // Round 1 = 1 scene, Round 2 = 2 scenes, etc.
+        int amountToSpawn = currentRound;
 
         for (int i = 0; i < amountToSpawn; i++)
         {
@@ -96,14 +92,12 @@ public class SignalQuestManager : MonoBehaviour
         }
     }
 
-    // --- Alert System: Pops up a message and hides it after time ---
     public void ShowAlert(string message)
     {
         if (alertText != null)
         {
             alertText.text = message;
             alertText.gameObject.SetActive(true);
-
             CancelInvoke("HideAlert");
             Invoke("HideAlert", displayTime);
         }
@@ -117,43 +111,62 @@ public class SignalQuestManager : MonoBehaviour
     public void CollectPart()
     {
         partsCollected++;
-
         string msg = (partsCollected >= currentRound)
             ? $"Parts Complete! ({partsCollected}/{currentRound})"
             : $"Part Collected! ({partsCollected}/{currentRound})";
 
         ShowAlert(msg);
-        Debug.Log($"<color=green>Item Collected!</color> Current Inventory: {partsCollected}/{currentRound}");
     }
 
+    // --- ส่วนที่แก้ไข: เพิ่มการโหลดฉากจบ ---
     public void OnSignalSuccess()
     {
         if (currentRound < 3)
         {
             currentRound++;
             partsCollected = 0;
-            PrepareGlobalSpawns(); // Reroll scenes for the next round
+            PrepareGlobalSpawns();
+
             if (currentRound == 2)
             {
-                // จบรอบ 1 เข้าสู่รอบ 2: ฐานเพิ่ม 1.5
                 HeatSystem.instance.SetNewRoundDifficulty(1.5f);
             }
             else if (currentRound == 3)
             {
-                // จบรอบ 2 เข้าสู่รอบ 3: ฐานเพิ่ม 2.5
                 HeatSystem.instance.SetNewRoundDifficulty(2.5f);
             }
             ShowAlert($"Signal Sent! Round {currentRound} Started.");
         }
         else
         {
+            // ชนะเกม: ส่งครบ 3 รอบ
             ShowAlert("All Signals Sent! You Win!");
             Debug.Log("Game Finished: 3 Rounds Completed.");
+
+            // เรียกใช้ Coroutine เพื่อรอเวลาแล้ววาร์ปไปฉากจบ
+            StartCoroutine(WaitAndGoToVictory());
         }
+    }
+
+    IEnumerator WaitAndGoToVictory()
+    {
+        // รอ 3 วินาทีให้ผู้เล่นอ่านข้อความชนะก่อน
+        yield return new WaitForSeconds(3f);
+
+        // เปลี่ยน "VictoryScene" เป็นชื่อฉากจบชนะของคุณใน Build Settings
+        SceneManager.LoadScene("End win");
     }
 
     public bool IsReadyToSignal()
     {
         return partsCollected >= currentRound;
+    }
+
+    public void ResetQuestForNewGame()
+    {
+        currentRound = 1;
+        partsCollected = 0;
+        targetScenes.Clear();
+        Debug.Log("Reset Quest Manager Done!");
     }
 }

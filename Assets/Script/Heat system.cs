@@ -22,6 +22,9 @@ public class HeatSystem : MonoBehaviour
     private Volume globalVolume;
     private ColorAdjustments colorAdjustments;
     private WhiteBalance whiteBalance;
+    [Header("Alert Settings")]
+    public AudioSource warning75Audio; // ลาก Audio Source เสียงเตือนมาใส่
+    private bool hasPlayed75Warning = false; // กันไม่ให้เสียงดังซ้ำซาก
 
     void Awake()
     {
@@ -70,6 +73,8 @@ public class HeatSystem : MonoBehaviour
         IncreaseHeat();
         UpdateUI();
         UpdateVisuals();
+        CheckGameOver();
+        CheckHeatWarning();
     }
 
     void IncreaseHeat()
@@ -125,5 +130,55 @@ public class HeatSystem : MonoBehaviour
     void OnHeatFull()
     {
         if (Time.frameCount % 60 == 0) Debug.Log("ความร้อนเต็มแล้ว!");
+    }
+    public void ResetSystemForNewGame()
+    {
+        currentHeat = 0f;
+        heatIncreasePerSecond = 0.5f; // กลับไปค่าเริ่มต้นสุดๆ
+        currentDefaultRate = 0.5f;
+        // ถ้ามี UI Slider ให้รีเซ็ตด้วย
+        if (heatSlider != null) heatSlider.value = 0f;
+        Debug.Log("Reset Heat System Done!");
+    }
+    void CheckGameOver()
+    {
+        // เงื่อนไขที่ 1: ความร้อนเต็ม 100
+        if (currentHeat >= maxHeat)
+        {
+            GameOver();
+        }
+
+        // เงื่อนไขที่ 2: ค่าสติเหลือ 0 (สมมติว่าคุณมีตัวแปร currentSanity)
+        // ถ้าคุณแยกสคริปต์สติไว้ที่อื่น ให้เรียกผ่าน Instance เช่น SanitySystem.instance.currentSanity
+        if (SanitySystem.currentSanity <= 0)
+        {
+            GameOver();
+        }
+    }
+
+    void GameOver()
+    {
+        Debug.Log("Game Over!");
+        // โหลด Scene จบเกมที่คุณเตรียมไว้
+        SceneManager.LoadScene("lose");
+    }
+    void CheckHeatWarning()
+    {
+        // เช็กว่าความร้อนถึง 75 หรือยัง (สมมติ maxHeat คือ 100)
+        if (currentHeat >= 75f && !hasPlayed75Warning)
+        {
+            if (warning75Audio != null)
+            {
+                warning75Audio.Play();
+                hasPlayed75Warning = true; // ล็อคไว้ให้ดังครั้งเดียวในรอบนั้น
+                Debug.Log("ความร้อนสูงเกิน 75%! เล่นเสียงเตือน");
+            }
+        }
+
+        // ทริค: ถ้าความร้อนลดลงต่ำกว่า 60% อาจจะรีเซ็ตให้เสียงเตือนใหม่ได้ในอนาคต (ถ้าต้องการ)
+        if (currentHeat < 60f)
+        {
+            hasPlayed75Warning = false;
+        }
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class SanitySystem : MonoBehaviour
 {
     [Header("Sanity Settings")]
-    public float currentSanity = 100f;
+    public static float currentSanity = 100f;
     public float maxSanity = 100f;
     public float sanityDropRate = 2f;    // ลดลงกี่หน่วยต่อวินาที
     public float heatThreshold = 50f;    // จุดที่เริ่มสติหลุด (ความร้อนเกิน 50)
