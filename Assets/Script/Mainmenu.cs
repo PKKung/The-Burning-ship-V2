@@ -5,20 +5,26 @@ public class MainMenu : MonoBehaviour
 {
     public void StartGame()
     {
-        // --- 1. รีเซ็ตระบบความร้อน (Heat System) ---
-        HeatSystem.currentHeat = 0f;
-        HeatSystem.heatIncreasePerSecond = 0.5f;
-        if (HeatSystem.instance != null)
-        {
-            HeatSystem.instance.currentDefaultRate = 0.5f;
-            // ถ้าคุณมีตัวแปรเช็คเสียง 75% ใน HeatSystem อย่าลืมรีเซ็ตด้วย (ถ้ามี)
-            // HeatSystem.instance.hasPlayed75Warning = false;
-        }
+        // บังคับหยุดการทำงานที่ค้างอยู่ทั้งหมดในหน้าเมนู (ถ้ามี)
+        StopAllCoroutines();
 
-        // --- 2. รีเซ็ตรอบและเควส (Signal Quest) ---
+        // --- 1. รีเซ็ตรอบและเควส (Signal Quest) ---
+        // ต้องทำอันนี้ก่อนเพื่อหยุด Coroutine การวาร์ปฉากจบที่อาจค้างมาจากเกมรอบที่แล้ว
         if (SignalQuestManager.instance != null)
         {
             SignalQuestManager.instance.ResetQuestForNewGame();
+        }
+
+        // --- 2. รีเซ็ตระบบความร้อน (Heat System) ---
+        HeatSystem.currentHeat = 0f;
+        if (HeatSystem.instance != null)
+        {
+            HeatSystem.instance.currentDefaultRate = 0.5f;
+            // รีเซ็ตความเร็วเพิ่มความร้อนกลับไปที่ค่าเริ่มต้น
+            HeatSystem.heatIncreasePerSecond = 0.5f;
+
+            // แถม: รีเซ็ตสถานะเสียงเตือน 75% ถ้าคุณมีตัวแปรนี้
+            // HeatSystem.instance.hasPlayed75Warning = false;
         }
 
         // --- 3. รีเซ็ตค่าสติและเสียงเตือนสติ (Sanity System) ---
@@ -39,18 +45,19 @@ public class MainMenu : MonoBehaviour
             SignalStartVoiceManager.instance.ResetSignalVoices();
         }
 
-        // --- 5. รีเซ็ตเสียงเข้าฉากครั้งแรก (Static Variables) ---
-
+        // --- 5. รีเซ็ตตัวแปร Static สำหรับเสียงเข้าฉากครั้งแรก ---
+        // (เพิ่มฉากอื่นๆ ให้ครบถ้ามี)
+        
         FirstTimeAudioScene5.hasPlayedInScene5 = false;
 
-        // --- 6. โหลดฉากเริ่มเกม (ตรวจสอบชื่อให้ตรงกับ Build Settings) ---
+        // --- 6. โหลดฉากเริ่มเกม ---
+        Debug.Log("Starting New Game... Resetting All Systems.");
         SceneManager.LoadScene("Intro");
     }
+
     public void QuitGame()
     {
         Debug.Log("ออกจากเกม!");
         Application.Quit();
     }
 }
-
-

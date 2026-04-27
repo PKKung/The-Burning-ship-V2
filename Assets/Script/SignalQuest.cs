@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
-using System.Collections; // เพิ่มตัวนี้เพื่อให้ใช้ Coroutine ได้
+using System.Collections;
 using TMPro;
 
 public class SignalQuestManager : MonoBehaviour
@@ -37,6 +37,7 @@ public class SignalQuestManager : MonoBehaviour
 
     void Start()
     {
+        // เริ่มต้นเกมครั้งแรกสุด
         if (currentRound == 1 && targetScenes.Count == 0)
         {
             PrepareGlobalSpawns();
@@ -50,6 +51,7 @@ public class SignalQuestManager : MonoBehaviour
     {
         string currentSceneName = scene.name;
 
+        // ค้นหา UI Alert ในฉากใหม่ทุกครั้ง
         GameObject foundText = GameObject.Find("AlertText");
         if (foundText != null)
         {
@@ -57,6 +59,7 @@ public class SignalQuestManager : MonoBehaviour
             alertText.gameObject.SetActive(false);
         }
 
+        // ระบบสุ่มเกิดของในฉากที่กำหนด
         for (int i = targetScenes.Count - 1; i >= 0; i--)
         {
             if (targetScenes[i] == currentSceneName)
@@ -77,7 +80,7 @@ public class SignalQuestManager : MonoBehaviour
             string selectedScene = allSceneNames[Random.Range(0, allSceneNames.Count)];
             targetScenes.Add(selectedScene);
         }
-        Debug.Log("Target Scenes Initialized: " + string.Join(", ", targetScenes));
+        Debug.Log("Target Scenes Initialized for Round " + currentRound + ": " + string.Join(", ", targetScenes));
     }
 
     void SpawnAtRandomPointInScene()
@@ -88,7 +91,7 @@ public class SignalQuestManager : MonoBehaviour
         {
             int randomIndex = Random.Range(0, points.Length);
             Instantiate(sparePartPrefab, points[randomIndex].transform.position, Quaternion.identity);
-            Debug.Log("<color=yellow>A spare part has spawned in this scene!</color>");
+            Debug.Log("<color=yellow>A spare part has spawned!</color>");
         }
     }
 
@@ -118,7 +121,6 @@ public class SignalQuestManager : MonoBehaviour
         ShowAlert(msg);
     }
 
-    // --- ส่วนที่แก้ไข: เพิ่มการโหลดฉากจบ ---
     public void OnSignalSuccess()
     {
         if (currentRound < 3)
@@ -127,33 +129,23 @@ public class SignalQuestManager : MonoBehaviour
             partsCollected = 0;
             PrepareGlobalSpawns();
 
-            if (currentRound == 2)
-            {
-                HeatSystem.instance.SetNewRoundDifficulty(1.5f);
-            }
-            else if (currentRound == 3)
-            {
-                HeatSystem.instance.SetNewRoundDifficulty(2.5f);
-            }
+            // ปรับระดับความยากความร้อนตามรอบ
+            if (currentRound == 2) { HeatSystem.instance.SetNewRoundDifficulty(1.5f); }
+            else if (currentRound == 3) { HeatSystem.instance.SetNewRoundDifficulty(2.5f); }
+
             ShowAlert($"Signal Sent! Round {currentRound} Started.");
         }
         else
         {
-            // ชนะเกม: ส่งครบ 3 รอบ
+            // ชนะเกมเมื่อส่งครบ 3 ครั้ง
             ShowAlert("All Signals Sent! You Win!");
-            Debug.Log("Game Finished: 3 Rounds Completed.");
-
-            // เรียกใช้ Coroutine เพื่อรอเวลาแล้ววาร์ปไปฉากจบ
             StartCoroutine(WaitAndGoToVictory());
         }
     }
 
     IEnumerator WaitAndGoToVictory()
     {
-        // รอ 3 วินาทีให้ผู้เล่นอ่านข้อความชนะก่อน
         yield return new WaitForSeconds(3f);
-
-        // เปลี่ยน "VictoryScene" เป็นชื่อฉากจบชนะของคุณใน Build Settings
         SceneManager.LoadScene("End win");
     }
 
@@ -162,11 +154,20 @@ public class SignalQuestManager : MonoBehaviour
         return partsCollected >= currentRound;
     }
 
+    // --- ฟังก์ชันรีเซ็ตที่แก้ไขแล้ว ---
     public void ResetQuestForNewGame()
     {
+        // 1. หยุดการนับถอยหลังวาร์ปที่อาจค้างอยู่จากเกมรอบก่อน
+        StopAllCoroutines();
+
+        // 2. รีเซ็ตค่าตัวเลขกลับไปเริ่มต้น
         currentRound = 1;
         partsCollected = 0;
+
+        // 3. ล้างรายชื่อฉากและสุ่มใหม่สำหรับรอบที่ 1 ทันที
         targetScenes.Clear();
-        Debug.Log("Reset Quest Manager Done!");
+        PrepareGlobalSpawns();
+
+        Debug.Log("SignalQuestManager: Reset Complete. Ready for New Game.");
     }
 }

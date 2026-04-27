@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SanitySystem : MonoBehaviour
@@ -57,6 +58,7 @@ public class SanitySystem : MonoBehaviour
     void OnSanityZero()
     {
         Debug.Log("สติหลุดหมดแล้ว! (Game Over หรือ หน้าจอมัวลงตรงนี้)");
+        SceneManager.LoadScene("lose");
         // คุณสามารถใส่โค้ด Effect หน้าจอมัว หรือตัดเข้าฉากจบตรงนี้ได้
     }
 
