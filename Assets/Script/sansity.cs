@@ -25,6 +25,7 @@ public class SanitySystem : MonoBehaviour
 
     void Update()
     {
+        if (SceneManager.GetActiveScene().name == "lose") return;
         // 1. เช็กค่าความร้อนจาก HeatSystem (ที่เป็น Static)
         if (HeatSystem.currentHeat > heatThreshold)
         {

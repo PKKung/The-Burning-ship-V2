@@ -70,6 +70,8 @@ public class HeatSystem : MonoBehaviour
 
     void Update()
     {
+        if (SceneManager.GetActiveScene().name == "lose") return;
+
         IncreaseHeat();
         UpdateUI();
         UpdateVisuals();
