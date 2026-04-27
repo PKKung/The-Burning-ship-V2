@@ -42,7 +42,7 @@ public class GameOverMenu : MonoBehaviour
         // --- 5. รีเซ็ตเสียงเข้าฉากครั้งแรก (Static Variables) ---
         
         FirstTimeAudioScene5.hasPlayedInScene5 = false;
-
+        CoolDownVoiceManager.hasPlayedFirstCoolDownSound = false;
         // --- 6. โหลดฉากเริ่มเกม (ตรวจสอบชื่อให้ตรงกับ Build Settings) ---
         SceneManager.LoadScene("Level_1");
     }

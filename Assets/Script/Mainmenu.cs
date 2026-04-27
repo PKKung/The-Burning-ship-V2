@@ -47,7 +47,7 @@ public class MainMenu : MonoBehaviour
 
         // --- 5. รีเซ็ตตัวแปร Static สำหรับเสียงเข้าฉากครั้งแรก ---
         // (เพิ่มฉากอื่นๆ ให้ครบถ้ามี)
-        
+        CoolDownVoiceManager.hasPlayedFirstCoolDownSound = false;
         FirstTimeAudioScene5.hasPlayedInScene5 = false;
 
         // --- 6. โหลดฉากเริ่มเกม ---

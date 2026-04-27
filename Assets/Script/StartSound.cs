@@ -4,35 +4,45 @@ using System.Collections;
 public class LevelStartManager : MonoBehaviour
 {
     [Header("Settings")]
-    public AudioSource introAudio;      // ลาก Audio Source ที่ใส่เสียง 6 วิมาใส่
-    public float freezeDuration = 6f;   // เวลาที่ห้ามขยับ (6 วินาที)
+    public AudioSource introAudio;
+    public float freezeDuration = 6f;
 
-    // ลากสคริปต์ตัวละครของคุณมาใส่ (เช่น PlayerController หรือ ThirdPersonController)
-    // สมมติว่าชื่อ PlayerMovement นะครับ ให้แก้ตามชื่อสคริปต์เดินของคุณ
+    // --- ส่วนที่เพิ่มเข้ามาเพื่อจดจำสถานะ ---
+    // ใช้ static เพื่อให้ตัวแปรนี้ "ไม่ถูกลบ" เมื่อเปลี่ยนฉากไปมา
+    public static bool hasPlayedInThisLevel = false;
+
     private MonoBehaviour playerMovementScript;
 
     void Start()
     {
-        // ค้นหาสคริปต์เดินของตัวละคร (แก้ชื่อ "PlayerMovement" เป็นชื่อสคริปต์เดินจริงๆ ของคุณ)
-        playerMovementScript = GameObject.FindGameObjectWithTag("Player").GetComponent<MonoBehaviour>();
+        // 1. เช็กก่อนเลยว่า "เคยเล่นไปหรือยัง?"
+        if (hasPlayedInThisLevel)
+        {
+            Debug.Log("ฉากนี้เคยเล่นเสียงไปแล้ว ไม่ล็อคตัวซ้ำ");
+            return; // จบการทำงานทันที ไม่ต้องรัน Coroutine ข้างล่าง
+        }
 
-        StartCoroutine(StartLevelRoutine());
+        // 2. ถ้ายังไม่เคยเล่น ให้หาตัวละครแล้วเริ่มทำงาน
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerMovementScript = player.GetComponent<MonoBehaviour>();
+            StartCoroutine(StartLevelRoutine());
+        }
     }
 
     IEnumerator StartLevelRoutine()
     {
-        // 1. ปิดการเคลื่อนที่ (Disable Script เดิน)
-        if (playerMovementScript != null) playerMovementScript.enabled = false;
-        Debug.Log("ตัวละครถูกล็อค: เริ่มเล่นเสียง");
+        // ล็อคกุญแจทันทีเพื่อป้องกันการรันซ้ำ
+        hasPlayedInThisLevel = true;
 
-        // 2. เล่นเสียง
+        if (playerMovementScript != null) playerMovementScript.enabled = false;
+
         if (introAudio != null) introAudio.Play();
 
-        // 3. รอจนครบเวลา (6 วินาที)
         yield return new WaitForSeconds(freezeDuration);
 
-        // 4. เปิดการเคลื่อนที่ (Enable Script เดิน)
         if (playerMovementScript != null) playerMovementScript.enabled = true;
-        Debug.Log("ตัวละครขยับได้แล้ว!");
+        Debug.Log("Intro จบแล้ว แฮมสเตอร์ขยับได้!");
     }
 }
