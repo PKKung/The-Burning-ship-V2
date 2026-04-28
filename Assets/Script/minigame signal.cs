@@ -86,8 +86,8 @@ public class SignalMiniGame : MonoBehaviour
         int round = SignalQuestManager.instance.currentRound;
         float miniGameRate = 3.0f; // รอบ 1
 
-        if (round == 2) miniGameRate = 4.0f;
-        else if (round == 3) miniGameRate = 5.0f;
+        if (round == 2) miniGameRate = 3.0f;
+        else if (round == 3) miniGameRate = 3.0f;
 
         HeatSystem.SetHeatRate(miniGameRate);
     }

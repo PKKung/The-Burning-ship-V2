@@ -948,8 +948,8 @@ MonoBehaviour:
   barBackground: {fileID: 589897410}
   blueZone: {fileID: 1663062857}
   needleSpeed: 300
-  goodCooling: 5
-  badHeating: 20
+  goodCooling: 10
+  badHeating: 10
 --- !u!1 &775990340
 GameObject:
   m_ObjectHideFlags: 0
