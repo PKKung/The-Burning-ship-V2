@@ -35,7 +35,7 @@ public class SignalMiniGame : MonoBehaviour
         float currentDrop=1f;
         if (round == 1) currentDrop = 1f;  // รอบ 1 ลดวิละ 1
         else if (round == 2) currentDrop = 0.5f; // รอบ 2 ลดวิละ 2 (ยากขึ้น)
-        else if (round == 3) currentDrop = 0.35f; // รอบ 3 ลดวิละ 4 (ยากสุด)
+        else if (round == 3) currentDrop = 0.45f; // รอบ 3 ลดวิละ 4 (ยากสุด)
 
         currentSignal -= currentDrop * Time.deltaTime;
         // ------------------------------------------------
@@ -63,7 +63,7 @@ public class SignalMiniGame : MonoBehaviour
         float currentAddPower=1f;
         if (round == 1) currentAddPower = 3f;   // รอบ 1 กดทีละ 3
         else if (round == 2) currentAddPower = 1.8f; // รอบ 2 กดทีละ 1.8 (ยากขึ้น)
-        else if (round == 3) currentAddPower = 1.2f; // รอบ 3 กดทีละ 1.2 (ยากสุด)
+        else if (round == 3) currentAddPower = 1.65f; // รอบ 3 กดทีละ 1.65 (ยากสุด)
 
         currentSignal += currentAddPower;
 
