@@ -69,7 +69,7 @@ public class SignalMiniGame : MonoBehaviour
 
         if (round == 1) currentAddPower = 3f;
         else if (round == 2) currentAddPower = 1.8f;
-        else if (round == 3) currentAddPower = 1.65f;
+        else if (round == 3) currentAddPower = 1.4f;
 
         currentSignal += currentAddPower;
 
