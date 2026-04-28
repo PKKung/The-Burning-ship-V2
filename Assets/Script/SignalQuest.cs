@@ -130,8 +130,8 @@ public class SignalQuestManager : MonoBehaviour
             PrepareGlobalSpawns();
 
             // ปรับระดับความยากความร้อนตามรอบ
-            if (currentRound == 2) { HeatSystem.instance.SetNewRoundDifficulty(1.5f); }
-            else if (currentRound == 3) { HeatSystem.instance.SetNewRoundDifficulty(2.5f); }
+            if (currentRound == 2) { HeatSystem.instance.SetNewRoundDifficulty(0.5f); }
+            else if (currentRound == 3) { HeatSystem.instance.SetNewRoundDifficulty(0.5f); }
 
             ShowAlert($"Signal Sent! Round {currentRound} Started.");
         }
