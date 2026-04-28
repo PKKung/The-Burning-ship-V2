@@ -32,11 +32,5 @@ public class VideoToMainMenu : MonoBehaviour
     }
 
     // (แถม) เผื่อผู้เล่นอยากกด Skip วิดีโอ
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(0))
-        {
-            SceneManager.LoadScene("u");
-        }
-    }
+ 
 }
