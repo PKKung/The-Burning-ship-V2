@@ -125,6 +125,7 @@ public class SignalQuestManager : MonoBehaviour
     {
         if (currentRound < 3)
         {
+            SignalMiniGame.ResetSignalData();
             currentRound++;
             partsCollected = 0;
             PrepareGlobalSpawns();
@@ -163,6 +164,7 @@ public class SignalQuestManager : MonoBehaviour
         // 2. รีเซ็ตค่าตัวเลขกลับไปเริ่มต้น
         currentRound = 1;
         partsCollected = 0;
+        SignalMiniGame.ResetSignalData();
 
         // 3. ล้างรายชื่อฉากและสุ่มใหม่สำหรับรอบที่ 1 ทันที
         targetScenes.Clear();

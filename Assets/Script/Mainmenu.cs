@@ -49,6 +49,7 @@ public class MainMenu : MonoBehaviour
         // (เพิ่มฉากอื่นๆ ให้ครบถ้ามี)
         CoolDownVoiceManager.hasPlayedFirstCoolDownSound = false;
         FirstTimeAudioScene5.hasPlayedInScene5 = false;
+        SignalMiniGame.ResetSignalData();
 
         // --- 6. โหลดฉากเริ่มเกม ---
         Debug.Log("Starting New Game... Resetting All Systems.");

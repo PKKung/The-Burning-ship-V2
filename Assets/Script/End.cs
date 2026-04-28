@@ -43,6 +43,7 @@ public class GameOverMenu : MonoBehaviour
         
         FirstTimeAudioScene5.hasPlayedInScene5 = false;
         CoolDownVoiceManager.hasPlayedFirstCoolDownSound = false;
+        SignalMiniGame.ResetSignalData();
         // --- 6. โหลดฉากเริ่มเกม (ตรวจสอบชื่อให้ตรงกับ Build Settings) ---
         SceneManager.LoadScene("Level_1");
     }
