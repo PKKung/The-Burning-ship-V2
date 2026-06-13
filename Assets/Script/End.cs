@@ -1,0 +1,59 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameOverMenu : MonoBehaviour
+{
+    public void Retry()
+    {
+        // --- 1. รีเซ็ตระบบความร้อน (Heat System) ---
+        HeatSystem.currentHeat = 0f;
+        HeatSystem.heatIncreasePerSecond = 0.5f;
+        if (HeatSystem.instance != null)
+        {
+            HeatSystem.instance.currentDefaultRate = 0.5f;
+            // ถ้าคุณมีตัวแปรเช็คเสียง 75% ใน HeatSystem อย่าลืมรีเซ็ตด้วย (ถ้ามี)
+            // HeatSystem.instance.hasPlayed75Warning = false;
+        }
+
+        // --- 2. รีเซ็ตรอบและเควส (Signal Quest) ---
+        if (SignalQuestManager.instance != null)
+        {
+            SignalQuestManager.instance.ResetQuestForNewGame();
+        }
+
+        // --- 3. รีเซ็ตค่าสติและเสียงเตือนสติ (Sanity System) ---
+        SanitySystem.currentSanity = 100f;
+        if (SanityVoiceManager.instance != null)
+        {
+            SanityVoiceManager.instance.ResetSanityVoices();
+        }
+
+        // --- 4. รีเซ็ตเสียงประกอบอื่นๆ (Voice Managers) ---
+        if (PickupVoiceManager.instance != null)
+        {
+            PickupVoiceManager.instance.ResetVoiceStatus();
+        }
+
+        if (SignalStartVoiceManager.instance != null)
+        {
+            SignalStartVoiceManager.instance.ResetSignalVoices();
+        }
+
+        // --- 5. รีเซ็ตเสียงเข้าฉากครั้งแรก (Static Variables) ---
+        
+        FirstTimeAudioScene5.hasPlayedInScene5 = false;
+        CoolDownVoiceManager.hasPlayedFirstCoolDownSound = false;
+        SignalMiniGame.ResetSignalData();
+        // --- 6. โหลดฉากเริ่มเกม (ตรวจสอบชื่อให้ตรงกับ Build Settings) ---
+        SceneManager.LoadScene("Level_1");
+    }
+
+    
+
+    public void QuitGame()
+    {
+        // ปิดเกม (ใช้สำหรับปุ่ม Exit ในหน้าเมนู)
+        Debug.Log("Quitting game...");
+        Application.Quit();
+    }
+}
